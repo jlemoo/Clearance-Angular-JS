@@ -952,15 +952,19 @@ clearanceControllers.controller('viewClearanceCtrl',['$scope','$filter','sharedP
                 document.getElementById("location").innerHTML = location;
                 document.getElementById("room").innerHTML = room;
                 document.getElementById("SpecialInstructions").innerHTML = specialInstructions;
-                jQuery.when(getUserName(supervisorID),getUserName(authorID)).done(function(a1,a2){
-                    var supervisorDisplayName = a1[0].Title;
-                    $scope.supervisorDisplayName = supervisorDisplayName;
-                    var initiatedByDisplayName = a2[0].Title;
+                jQuery.when(getUserName(authorID)).done(function(a2){
+                    var initiatedByDisplayName = a2.Title;
                     displayNameNode=document.createTextNode(initiatedByDisplayName);
                     document.getElementById("initiatedBy").appendChild(displayNameNode);
                     }).fail(function(){
-                        alert("Failed to get name of user or supervisor or both.");
-                    });
+                        alert("Failed to get name of author.");
+                });
+                jQuery.when(getUserName(supervisorID)).done(function (a1) {
+                    var supervisorDisplayName = a1.Title;
+                    $scope.supervisorDisplayName = supervisorDisplayName;
+                }).fail(function () {
+                    alert("Failed to get name of supervisor.");
+                });
                 jQuery.when(getUserName(safetySignature)).done(function(answer){
                     $scope.signatureDisplayName = answer.Title;
                     $scope.$apply();
@@ -1279,7 +1283,12 @@ clearanceControllers.controller('viewClearanceCtrl',['$scope','$filter','sharedP
                                     };
                                 };
                                 //end generic sendmail function
-                                sendEmail('no-reply@sharepointonline.com', employeeEmailArray, noticeNameEmails, clearanceBody, clearanceSubject);
+                                if (employeeEmailArray[0] == null) {
+                                    var myEmptyArray = [];
+                                    sendEmail('no-reply@sharepointonline.com', noticeNameEmails, myEmptyArray, clearanceBody, clearanceSubject);
+                                } else {
+                                    sendEmail('no-reply@sharepointonline.com', employeeEmailArray, noticeNameEmails, clearanceBody, clearanceSubject);
+                                };
                             }));
                         });
                     }
