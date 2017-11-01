@@ -202,8 +202,9 @@ clearanceControllers.controller('inProcessCtrl',['$scope','sharedProperties','$h
         $scope.currentPage = 1;
         $scope.pageSize = 10;
         //they asked me to switch sorting to final day instead of by name. JBL August 12, 2016
-        //$scope.orderProp = 'eName';
-        $scope.orderProp = 'finalD';
+        //they asked me to switch sorting to back to by name. JBL August 18, 2017
+        $scope.orderProp = 'eName';
+        //$scope.orderProp = 'finalD';
         $scope.pageChangeHandler = function(num) {
           console.log('Page changed to ' + num);
         };
@@ -962,6 +963,7 @@ clearanceControllers.controller('viewClearanceCtrl',['$scope','$filter','sharedP
                 jQuery.when(getUserName(supervisorID)).done(function (a1) {
                     var supervisorDisplayName = a1.Title;
                     $scope.supervisorDisplayName = supervisorDisplayName;
+                    $scope.$apply();
                 }).fail(function () {
                     alert("Failed to get name of supervisor.");
                 });
@@ -1404,8 +1406,11 @@ clearanceControllers.controller('viewClearanceCtrl',['$scope','$filter','sharedP
                     adminBody += " is going through the Wadsworth Center clearance process. ";
                     adminBody += "Please use the following URL and complete the information for your group. ";
                     adminBody += "<br>";
-                    adminBody += "Clearance for " + '<a href="' + hostweburl + "/SitePages/editClearanceParameters.aspx?itemID=" + itemID + '">';
-                    adminBody += targetEmployeeDisplayName + "</a>";
+//following two lines commented out on November 1, 2017 to comply with order that URLs are not embedded in an <a> tag.
+//                    adminBody += "Clearance for " + '<a href="' + hostweburl + "/SitePages/editClearanceParameters.aspx?itemID=" + itemID + '">';
+//                    adminBody += targetEmployeeDisplayName + "</a>";
+                    var employeeLine = hostweburl + "/SitePages/editClearanceParameters.aspx?itemID=" + itemID;
+                    adminBody += "Clearance for " + targetEmployeeDisplayName + ": " + employeeLine;
                     sendEmail("no-reply@sharepointonline.com", clearanceAdminEmails, [""], adminBody,adminSubject);
                 });
             };
@@ -1875,7 +1880,7 @@ clearanceControllers.controller('viewClearanceCtrl',['$scope','$filter','sharedP
                 //end tooltips
             });
 
-        $scope.$apply();
+        //$scope.$apply();
         //end get stakeholders names
     }]);
 //end of view controller
@@ -1968,7 +1973,7 @@ clearanceControllers.controller('piClearanceCtrl',['$scope','$filter','sharedPro
             var sph = jQuery("input[name=optionsSPH]:checked").val();
             if (sph=="Yes") {
                 if (sphComment) { sphComment += "   Employee is a SPH student. -PI  " }
-                else{sphComment = "Employee is a SPH student. -PI  ";}
+                else{sphComment = "Employee is an SPH student. -PI  ";}
                 
             }else{
                 if (sphComment) { sphComment += "   Employee is not an SPH student. -PI  " }
